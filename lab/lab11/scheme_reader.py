@@ -39,20 +39,24 @@ def scheme_read(src):
     >>> scheme_read(Buffer(tokenize_lines(['(+ 1 2)'])))
     Pair('+', Pair(1, Pair(2, nil)))
     """
+    # '(1 2) = Pair(
+    #   'quote', 
+    #   Pair(Pair(1, Pair(2, nil)), nil)
+    # )
     if src.current() is None:
         raise EOFError
     val = src.pop_first()  # Get and remove the first token
     if val == 'nil':
         # BEGIN PROBLEM 2
-        "*** YOUR CODE HERE ***"
+        return nil
         # END PROBLEM 2
     elif val == '(':
         # BEGIN PROBLEM 2
-        "*** YOUR CODE HERE ***"
+        return read_tail(src)
         # END PROBLEM 2
     elif val == "'":
         # BEGIN PROBLEM 3
-        "*** YOUR CODE HERE ***"
+        return Pair('quote', Pair(scheme_read(src), nil))
         # END PROBLEM 3
     elif val not in DELIMITERS:
         return val
@@ -73,11 +77,13 @@ def read_tail(src):
             raise SyntaxError('unexpected end of file')
         elif src.current() == ')':
             # BEGIN PROBLEM 2
-            "*** YOUR CODE HERE ***"
+            src.pop_first()
+            return nil
             # END PROBLEM 2
         else:
             # BEGIN PROBLEM 2
-            "*** YOUR CODE HERE ***"
+            val = scheme_read(src)
+            return Pair(val, read_tail(src))
             # END PROBLEM 2
     except EOFError:
         raise SyntaxError('unexpected end of file')
@@ -109,7 +115,7 @@ def read_line(line):
 
 # Interactive loop
 
-
+Pair(2, Pair(Pair(3, Pair(4, nil)), nil)) 
 def read_print_loop():
     """Run a read-print loop for Scheme expressions."""
     while True:
