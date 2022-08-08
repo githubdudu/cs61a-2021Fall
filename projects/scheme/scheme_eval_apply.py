@@ -35,9 +35,18 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
         return scheme_forms.SPECIAL_FORMS[first](rest, env)
     else:
         # BEGIN PROBLEM 3
-        "*** YOUR CODE HERE ***"
+        return scheme_apply(scheme_eval(first, env), rest.map(lambda exp:scheme_eval(exp, env)), env)
         # END PROBLEM 3
 
+# BEGIN PROBLEM 2
+# Convert Scheme list to Python list
+# Tail recursive
+def pair_to_list(pairs, init=[]):
+    if pairs is nil:
+        return list(init) # without list(), the init will be changed with plist.append()
+    else:
+        return pair_to_list(pairs.rest, init + [pairs.first])
+# END PROBLEM 2
 
 def scheme_apply(procedure, args, env):
     """Apply Scheme PROCEDURE to argument values ARGS (a Scheme list) in
@@ -45,15 +54,26 @@ def scheme_apply(procedure, args, env):
     validate_procedure(procedure)
     if isinstance(procedure, BuiltinProcedure):
         # BEGIN PROBLEM 2
-        "*** YOUR CODE HERE ***"
+        
+        plist = pair_to_list(args)
+
+        if procedure.expect_env:
+            plist.append(env)
+        
+        try:
+            return procedure.py_func(*plist)
+        except TypeError:
+            raise SchemeError("incorrect number of arguments")
         # END PROBLEM 2
     elif isinstance(procedure, LambdaProcedure):
         # BEGIN PROBLEM 9
-        "*** YOUR CODE HERE ***"
+        lambda_env = procedure.env.make_child_frame(procedure.formals, args)
+        return eval_all(procedure.body, lambda_env)
         # END PROBLEM 9
     elif isinstance(procedure, MuProcedure):
         # BEGIN PROBLEM 11
-        "*** YOUR CODE HERE ***"
+        mu_env = env.make_child_frame(procedure.formals, args) # use env in which expression was evaluated
+        return eval_all(procedure.body, mu_env)
         # END PROBLEM 11
     else:
         assert False, "Unexpected procedure: {}".format(procedure)
@@ -75,7 +95,14 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 6
-    return scheme_eval(expressions.first, env)  # replace this with lines of your own code
+    each = expressions
+    if each is nil:
+        return None
+    while each.rest is not nil:
+        scheme_eval(each.first, env)
+        each = each.rest
+
+    return scheme_eval(each.first, env)  # replace this with lines of your own code
     # END PROBLEM 6
 
 
