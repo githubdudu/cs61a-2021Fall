@@ -7,7 +7,18 @@
 ;; Returns a list of two-element lists
 (define (enumerate s)
   ; BEGIN PROBLEM 15
-  'replace-this-line
+    (define enum-with-index 
+      (lambda (str start) 
+        (if (null? str)
+          start
+          (enum-with-index ;Tail Calls
+            (cdr str) 
+            (append start (list (list (length start) (car str))))
+          )
+        )
+      )
+    )
+    (enum-with-index s nil)
   )
   ; END PROBLEM 15
 
@@ -17,8 +28,27 @@
 ;; the merged lists.
 (define (merge inorder? list1 list2)
   ; BEGIN PROBLEM 16
-  'replace-this-line
+  (define (merge-inner inorderi? list1i list2i start)
+    (let ((is-nil1 (null? list1i)) 
+      (is-nil2 (null? list2i)))
+      ; (print list1i)(print list2i)(print is-nil1)(print is-nil2)
+    (cond ((and is-nil1 is-nil2) start) ; both list is nil 
+      ((and is-nil1 (not is-nil2)) (append start list2i)) ; list1 is nil
+      ((and is-nil2 (not is-nil1)) (append start list1i)) ; list2 is nil
+      (else ( ; neither is nil
+        cond ((inorderi? (car list1i) (car list2i))  (merge-inner inorderi? 
+            (cdr list1i) 
+            list2i 
+            (append start (list (car list1i)))))
+          (else  (merge-inner inorderi? 
+            list1i 
+            (cdr list2i) 
+            (append start (list (car list2i)))))
+      )) 
+    ))
   )
+  (merge-inner inorder? list1 list2 nil)
+)
   ; END PROBLEM 16
 
 
