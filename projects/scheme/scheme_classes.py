@@ -146,3 +146,7 @@ class MuProcedure(Procedure):
 class MacroProcedure(LambdaProcedure):
     """A macro: a special form that operates on its unevaluated operands to
     create an expression that is evaluated in place of a call."""
+
+    def __repr__(self):
+        return 'MacroProcedure({0}, {1}, {2})'.format(
+            repr(self.formals), repr(self.body), repr(self.env))

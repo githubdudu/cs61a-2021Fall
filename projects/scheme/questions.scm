@@ -67,33 +67,38 @@
 (define (let-to-lambda expr)
   (cond ((atom? expr)
          ; BEGIN PROBLEM 17
-         'replace-this-line
+         expr
          ; END PROBLEM 17
          )
         ((quoted? expr)
          ; BEGIN PROBLEM 17
-         'replace-this-line
+         expr ; expr = (quote rest)
          ; END PROBLEM 17
          )
-        ((or (lambda? expr)
-             (define? expr))
+        ((or (lambda? expr) ; (lambda (a b)(+ a b))
+             (define? expr)) ; (define a 1)  (define (f x y) (+ x y))
          (let ((form   (car expr))
                (params (cadr expr))
                (body   (cddr expr)))
            ; BEGIN PROBLEM 17
-           'replace-this-line
+           (cons form (cons params (map let-to-lambda body)))
            ; END PROBLEM 17
            ))
-        ((let? expr)
-         (let ((values (cadr expr))
-               (body   (cddr expr)))
+        ((let? expr) ;(let ((a 1) (b 2)) (+ a b))
+         (let ((values (cadr expr)) ;(a 1) (b 2)
+               (body   (cddr expr))) ;((+ a b ))
+                ; ((a b) (1 2))
+                
            ; BEGIN PROBLEM 17
-           'replace-this-line
+           (let ((params (map (lambda (x) (car x)) values))
+                 (actual-values (map (lambda (x) (let-to-lambda (cadr x))) values)))
+            (cons (cons 'lambda (cons params (map let-to-lambda body))) actual-values)
+           )
            ; END PROBLEM 17
            ))
         (else
          ; BEGIN PROBLEM 17
-         'replace-this-line
+          (map let-to-lambda expr)
          ; END PROBLEM 17
          )))
 

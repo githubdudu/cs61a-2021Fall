@@ -35,7 +35,12 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
         return scheme_forms.SPECIAL_FORMS[first](rest, env)
     else:
         # BEGIN PROBLEM 3
-        return scheme_apply(scheme_eval(first, env), rest.map(lambda exp:scheme_eval(exp, env)), env)
+        # modify for optional problem 2: Macro
+        procedure = scheme_eval(first, env)
+        if isinstance(procedure, MacroProcedure):
+            print('DEBUG', procedure, rest)
+            return scheme_eval(complete_apply(procedure, rest, env), env)
+        return scheme_apply(procedure, rest.map(lambda exp:scheme_eval(exp, env)), env)
         # END PROBLEM 3
 
 # BEGIN PROBLEM 2
