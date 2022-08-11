@@ -1,0 +1,34 @@
+# ignore Q1 drawing
+
+# Q2:
+?start: select_statement
+select_statement: "SELECT" columns "FROM" table "WHERE"? condition* ";"
+columns: WORD ("," WORD)*
+table: WORD
+condition: "AND"? WORD COMPARATOR NUMBER
+COMPARATOR: "<" | ">" | "=" | ">=" | "<=" | "!="
+
+%doctest
+lark> SELECT name, age FROM cats
+....> WHERE age > 3 AND lives > 5 AND tail = 1;
+select_statement
+  columns
+    name
+    age
+  table  cats
+  condition
+    age
+    >
+    3
+  condition
+    lives
+    >
+    5
+  condition
+    tail
+    =
+    1
+%end
+%import common.WORD
+%import common.NUMBER
+%ignore /\s+/
