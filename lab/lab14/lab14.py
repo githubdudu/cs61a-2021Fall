@@ -20,7 +20,16 @@ def prune_min(t):
     >>> t3
     Tree(6, [Tree(3, [Tree(1)])])
     """
-    "*** YOUR CODE HERE ***"
+    def min_label_branch(branches):
+        result = branches[0]
+        for branch in branches:
+            if branch.label < result.label:
+                result = branch
+        return result
+    
+    if not t.is_leaf():
+        t.branches = [min_label_branch(t.branches)]
+        prune_min(t.branches[0])
 
 
 def address_oneline(text):
@@ -41,10 +50,10 @@ def address_oneline(text):
     >>> address_oneline("790 lowercase St")
     []
     """
-    block_number = r'___'
-    cardinal_dir = r'___'  # whitespace is important!
-    street = r'___'
-    type_abbr = r'___'
+    block_number = r'\b\d{3,5}\b'  # 3-5 digits
+    cardinal_dir = r'[NWES]?'  # whitespace is important! # Capital
+    street = r'(?:\s?[A-Z]\w+)+'  # Capital # using ?: to let python ignore ()
+    type_abbr = r'\s[A-Z]\w{1,4}\b'  # Capital 2-5letters Dr, Rd, Ave, St
     street_name = f"{cardinal_dir}{street}{type_abbr}"
     return re.findall(f"{block_number} {street_name}", text)
 

@@ -14,10 +14,15 @@ create table meals as
 
 -- Pizza places that open before 1pm in alphabetical order
 create table opening as
-SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+SELECT name
+FROM pizzas
+WHERE open < 13
+ORDER BY name;
 
 
 -- Two meals at the same place
 create table double as
-SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+SELECT a.meal as firstm, b.meal as secondm, name
+FROM pizzas, meals AS a, meals AS b
+WHERE open <= a.time AND close >= b.time AND a.time + 6 < b.time;
 
