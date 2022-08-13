@@ -115,10 +115,21 @@ class Player:
         self.popularity = 100
 
     def debate(self, other):
-        "*** YOUR CODE HERE ***"
+        # p = max(0.1, p1 / (p1 + p2))
+        p = max(0.1, self.popularity / (self.popularity + other.popularity))
+        random = make_test_random()
+
+        if random() < p:
+            self.popularity += 50
+        else:
+            other.popularity += 50
 
     def speech(self, other):
-        "*** YOUR CODE HERE ***"
+        add = self.popularity // 10
+        self.popularity += add
+        self.votes += add
+
+        other.popularity = max(0, other.popularity - (other.popularity // 10))
 
     def choose(self, other):
         return self.speech
@@ -142,7 +153,9 @@ class Game:
 
     def play(self):
         while not self.game_over:
-            "*** YOUR CODE HERE ***"
+            self.p1.choose(self.p2)(self.p2)
+            if not self.game_over:
+                self.p2.choose(self.p1)(self.p2)
         return self.winner
 
     @property
@@ -151,7 +164,11 @@ class Game:
 
     @property
     def winner(self):
-        "*** YOUR CODE HERE ***"
+        p1v, p2v = self.p1.votes, self.p2.votes
+        if p1v > p2v:
+            return self.p1
+        elif p1v < p2v:
+            return self.p2
 
 
 # Phase 3: New Players
@@ -167,7 +184,9 @@ class AggressivePlayer(Player):
     """
 
     def choose(self, other):
-        "*** YOUR CODE HERE ***"
+        if self.popularity <= other.popularity:
+            return self.debate
+        return self.speech
 
 
 class CautiousPlayer(Player):
@@ -184,7 +203,9 @@ class CautiousPlayer(Player):
     """
 
     def choose(self, other):
-        "*** YOUR CODE HERE ***"
+        if self.popularity == 0:
+            return self.debate
+        return self.speech
 
 
 def add_trees(t1, t2):
@@ -222,7 +243,16 @@ def add_trees(t1, t2):
         5
       5
     """
-    "*** YOUR CODE HERE ***"
+    if t1.is_leaf() and t2.is_leaf():
+        return Tree(t1.label + t2.label)
+    else:
+        zipped_branches = [add_trees(x, y) for x, y in zip(t1.branches, t2.branches)]
+        if len(t1.branches) > len(t2.branches):
+            zipped_branches += t1.branches[len(t2.branches):]
+        else:
+            zipped_branches += t2.branches[len(t1.branches):]
+
+        return Tree(t1.label + t2.label, zipped_branches)
 
 
 def foldl(link, fn, z):
@@ -238,8 +268,7 @@ def foldl(link, fn, z):
     if link is Link.empty:
         return z
     "*** YOUR CODE HERE ***"
-    return foldl(______, ______, ______)
-
+    return foldl(link.rest, fn, fn(z, link.first))
 
 def foldr(link, fn, z):
     """ Right fold
@@ -251,7 +280,9 @@ def foldr(link, fn, z):
     >>> foldr(lst, mul, 1) # (3 * (2 * (1 * 1)))
     6
     """
-    "*** YOUR CODE HERE ***"
+    if link is Link.empty:
+        return z
+    return fn(link.first, foldr(link.rest, fn, z))
 
 
 def match_url(text):
@@ -269,10 +300,10 @@ def match_url(text):
     >>> match_url("htp://domain.org")
     False
     """
-    scheme = r'___'
-    domain = r'___'
-    path = r'___'
-    anchor = r'___'
+    scheme = r'(http|https)\:\/\/'
+    domain = r'(?:[\-\.]?[\w\d]+)+'
+    path = r'(?:\/\w+)+(?:\/|\.\w+)?'
+    anchor = r'#[\w\d\-_]*'
     return bool(re.match(rf"^(?:{scheme})?{domain}(?:{path})?(?:{anchor})?$", text))
 
 
