@@ -1,0 +1,28 @@
+start: comp
+
+?comp: "[" expression "for" IDENTIFIER "in" IDENTIFIER "]"
+
+expression: IDENTIFIER operation*
+
+operation: OPERATOR NUMBER
+
+IDENTIFIER: /[a-zA-Z]+/
+
+OPERATOR: "*" | "/" | "+" | "-"
+
+%import common.NUMBER
+%ignore /\s+/
+
+# Select all of the non-terminal symbols in the grammar:
+comp
+expression
+operation
+
+# Which of the following comprehensions would be successfully parsed by the grammar?
+[ x * 2 for x in list ]
+[ x for x in list ]
+[ x ** 2 for x in list ]
+[ x - 2 for x in my_list ]
+
+# Which line would we need to modify to add support for a % operator, like in the expression [ n % 2 for n in numbers ]?
+OPERATOR: "*" | "/" | "+" | "-"
